@@ -1,0 +1,59 @@
+/* Slide mode (kit/slide.css): a purple page with a white rounded frame. Everything scales from one unit (rem) that follows the window,
+   so the same slide works on a laptop, a tablet, a portrait phone or a resized ClassIn frame. No fixed-size stage. */
+:root{
+  --purple:#6743ff;
+  --yellow:#ffcc08;
+  --yellow-deep:#e0a800;
+  --orange:#fb6835;
+  --ink:#1c1c28;
+  --display:"Fredoka","Arial Rounded MT Bold",sans-serif;
+  --title:"Poppins","Fredoka","Segoe UI",sans-serif;
+}
+*{box-sizing:border-box}
+html{font-size:clamp(8px,min(1.12vw,1.9vh),26px)}
+html,body{height:100%;margin:0}
+body{background:var(--purple);color:var(--ink);font-family:var(--title);overflow:hidden}
+
+/* the page and the frame */
+.page{position:fixed;inset:0}
+.frame{--r:2.6rem;position:absolute;inset:2rem;background:#fff;border-radius:var(--r);display:flex;flex-direction:column}
+
+/* logo notch: a purple block in the frame's top-left corner, with the two soft inner corners where it meets the white */
+.notch{--r:2.4rem;--w:18rem;--h:8.2rem;position:absolute;left:-.3rem;top:-.3rem;width:calc(var(--w) + .3rem);height:calc(var(--h) + .3rem);background:var(--purple);border-bottom-right-radius:var(--r);z-index:2;display:flex;align-items:center;padding-left:2.2rem;padding-bottom:.5rem}
+.notch::before,.notch::after{content:"";position:absolute;width:var(--r);height:var(--r);background:radial-gradient(circle at 100% 100%,#fff calc(var(--r) - .5px),var(--purple) var(--r))}
+.notch::before{left:.3rem;top:100%}
+.notch::after{left:100%;top:.3rem}
+.logo{display:block;height:5.8rem;width:auto;max-width:100%}
+
+/* header: the orange number badge and the instruction */
+.head{display:flex;align-items:center;gap:1.4rem;min-height:8.2rem;padding:0 4rem 0 calc(18rem + 2rem)}
+.badge{flex:none;display:grid;place-items:center;width:3rem;height:3rem;border-radius:.8rem;background:var(--yellow);color:var(--orange);font-weight:700;font-size:1.9rem;line-height:1}
+.instr{margin:0;font-weight:500;font-size:2.1rem;line-height:1.2;color:var(--orange);text-wrap:balance}
+
+/* content: whatever the slide needs, below the header */
+.content{flex:1;min-height:0;padding:.6rem 4rem 3rem}
+
+/* the website pill, bottom-right */
+.pill{position:absolute;right:4.6rem;bottom:4rem;padding:.55rem 1.8rem .75rem;border-radius:99px;background:var(--yellow);box-shadow:0 .3rem 0 var(--yellow-deep);font-family:var(--display);font-weight:400;font-size:1.6rem;color:var(--ink);text-decoration:none}
+
+/* portrait windows: the logo notch shrinks and the instruction goes on its own line under the logo */
+@media (max-aspect-ratio:1/1){
+  .frame{inset:1.4rem;--r:2rem}
+  .notch{--w:15rem;--h:7rem;--r:2rem;padding-left:1.6rem}
+  .logo{height:4.8rem}
+  .head{padding:8.4rem 2rem 0;min-height:0;gap:1rem;align-items:flex-start}
+  .badge{width:2.6rem;height:2.6rem;font-size:1.6rem}
+  .instr{font-size:2rem;padding-top:.3rem}
+  .pill{right:3.2rem;bottom:3rem}
+  .content{padding:1rem 2rem 5rem}
+}
+
+/* previous / next: two small round arrows, bottom centre of the frame */
+.nav{position:absolute;left:50%;bottom:1.6rem;transform:translateX(-50%);display:flex;gap:1.2rem;z-index:3}
+.nav button{width:3.4rem;height:3.4rem;padding:0;border:0;background:url(../ui-kit/icon-back.png) center/contain no-repeat;cursor:pointer;filter:drop-shadow(0 .2rem 0 rgba(6,24,50,.3));transition:transform .12s,filter .12s}
+.nav button[data-go="next"]{transform:scaleX(-1)}
+.nav button:hover{filter:brightness(1.12) drop-shadow(0 .2rem 0 rgba(6,24,50,.3))}
+.nav button:active{translate:0 .15rem}
+.nav button:focus-visible{outline:.2rem solid var(--purple);outline-offset:.2rem;border-radius:50%}
+.nav button:disabled{opacity:.35;cursor:default;filter:none}
+@media (max-aspect-ratio:1/1){.nav{bottom:1.2rem}.nav button{width:3rem;height:3rem}}

@@ -1,0 +1,561 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Unit 7 Lesson 2: There's a…</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600&family=Poppins:wght@500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="kit/slide.css">
+<style>
+/* Lesson 2 styles. Colours mean the same as in every game: blue = choose, green = correct, red = wrong, orange = go on. */
+:root{--blue:#23abfc;--green:#63b143;--red:#e0503c;--go:#fd7819;--soft:#f1edff;--line:#e4defc}
+.content{padding-bottom:5rem}
+.stage{height:100%;display:flex;gap:3rem;align-items:center;justify-content:center;min-height:0}
+.col{display:flex;flex-direction:column;gap:1.4rem;min-width:0;min-height:0}
+.pic{display:block;border-radius:1.6rem;object-fit:cover;box-shadow:0 .3rem 1rem rgba(60,30,160,.18);background:var(--soft)}
+.big{font-family:var(--display);font-weight:500;font-size:3.4rem;line-height:1.3;color:var(--ink)}
+.hl{color:var(--purple)}               /* "There's a" and the key nouns */
+.prep{color:var(--orange);font-weight:600}  /* in / on */
+
+/* buttons, drawn with the ui-kit art like the game kit */
+button{font-family:var(--display);cursor:pointer}
+.go,.choice,.pill-b{border-style:solid;border-color:transparent;border-radius:0;background-clip:padding-box;color:#fff;font-weight:600}
+.go{font-size:2.2rem;line-height:1.05;padding:0 .6rem;border-width:1.7rem;border-image:url(ui-kit/btn-orange.png) 70 fill/1.7rem;background-color:var(--go);text-shadow:0 .2rem 0 #7a3a05}
+.choice{font-size:2.4rem;line-height:1.05;padding:0 .4rem .5rem;border-width:1.4rem;border-image:url(ui-kit/btn-blue-deep.png) 70 fill/1.4rem;background-color:var(--blue);text-shadow:0 .15rem 0 rgba(6,40,90,.7);transition:transform .15s,filter .15s}
+.choice.sm{font-size:1.7rem;border-width:1.1rem;border-image-width:1.1rem}
+.choice.right{border-image-source:url(ui-kit/btn-green-deep.png);background-color:var(--green)}
+.choice.nope{border-image-source:url(ui-kit/btn-red.png);background-color:var(--red);animation:shake .45s;pointer-events:none}
+.pill-b{font-size:1.9rem;padding:0 .3rem;border-width:1rem;border-image:url(ui-kit/btn-blue.png) 70 fill/1rem;background-color:var(--blue);text-shadow:0 .12rem 0 rgba(6,40,90,.7);display:inline-flex;align-items:center;gap:.6rem}
+.pill-b.play{filter:hue-rotate(62deg) saturate(1.1);background-color:#7a5cf0}
+.pill-b.pause{border-image-source:url(ui-kit/btn-red.png);background-color:var(--red)}
+.pill-b.on{border-image-source:url(ui-kit/btn-green.png);background-color:var(--green)}
+.go:hover,.choice:hover,.pill-b:hover{filter:brightness(1.12)}
+.pill-b.play:hover{filter:hue-rotate(62deg) saturate(1.1) brightness(1.12)}
+.go:focus-visible,.choice:focus-visible,.pill-b:focus-visible,.tap:focus-visible{outline:.25rem solid var(--ink);outline-offset:.2rem}
+.hide{display:none!important}
+@keyframes shake{0%,100%{translate:0}20%{translate:-.5rem}40%{translate:.5rem}60%{translate:-.4rem}80%{translate:.4rem}}
+@keyframes pop{0%{scale:.9}60%{scale:1.06}100%{scale:1}}
+
+/* tally dots */
+.tally{display:flex;gap:.7rem}
+.tally i{width:1.3rem;height:1.3rem;border-radius:50%;background:var(--line)}
+.tally i.on{background:var(--green)}
+
+/* gap in a sentence */
+.gap{display:inline-block;min-width:5.2rem;border-bottom:.28rem solid var(--ink);text-align:center;line-height:1.1;vertical-align:baseline}
+.gap.target{border-color:var(--orange);background:#fff3ec;animation:blink 1.1s ease-in-out infinite}
+.gap.fill{border-color:var(--green);color:var(--green);font-weight:600;background:transparent;animation:pop .35s}
+@keyframes blink{50%{background:#ffe0cf}}
+
+/* cover: a 1920x1080 sheet scaled to the window, so the text sits exactly as on the Look! covers */
+.hero{position:absolute;inset:0;overflow:hidden;background:var(--purple);--u:calc(min(100vw,177.78vh) / 1920)}
+.hero .bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.hero .tint{position:absolute;inset:0;background:linear-gradient(90deg,rgba(103,67,255,.9) 0,rgba(103,67,255,.82) 28%,rgba(103,67,255,.45) 52%,rgba(103,67,255,.12) 78%),rgba(103,67,255,.1)}
+.hero .sheet{position:absolute;left:50%;top:50%;width:calc(var(--u)*1920);height:calc(var(--u)*1080);translate:-50% -50%}
+.hero .sheet>*{position:absolute;margin:0}
+.hl-logo{left:calc(var(--u)*66);top:calc(var(--u)*124);width:calc(var(--u)*390)}
+.lk{left:calc(var(--u)*66);top:calc(var(--u)*392);font-family:var(--title);font-weight:700;font-size:calc(var(--u)*226);line-height:1;color:#fff;letter-spacing:calc(var(--u)*-4)}
+.bd{left:calc(var(--u)*551);top:calc(var(--u)*318);width:calc(var(--u)*186);height:calc(var(--u)*186);border-radius:50%;background:#e04626;color:var(--yellow);font-family:var(--title);font-weight:700;font-size:calc(var(--u)*84);line-height:1;display:flex;align-items:center;justify-content:center;padding-bottom:calc(var(--u)*6)}
+.sub{left:calc(var(--u)*76);top:calc(var(--u)*634);font-family:var(--title);font-weight:500;font-size:calc(var(--u)*72);line-height:1.1;color:var(--yellow)}
+.hero .start{left:calc(var(--u)*76);top:calc(var(--u)*752);font-size:calc(var(--u)*44);padding:0 calc(var(--u)*6);border-width:calc(var(--u)*34);border-image-width:calc(var(--u)*34);white-space:nowrap}
+.ng{left:calc(var(--u)*76);top:calc(var(--u)*880);width:calc(var(--u)*270)}
+.web{left:50%;translate:-50% 0;top:calc(var(--u)*950);padding:calc(var(--u)*13) calc(var(--u)*50) calc(var(--u)*18);border-radius:99px;background:var(--yellow);box-shadow:0 calc(var(--u)*5) 0 var(--yellow-deep);font-family:var(--display);font-size:calc(var(--u)*26);color:var(--ink);text-decoration:none;white-space:nowrap}
+
+/* 1 recap cards */
+.cards{display:grid;grid-template-columns:repeat(4,1fr);gap:1.6rem;width:100%;height:100%;align-content:center}
+.cards .tap{position:relative;border:0;padding:0;background:none;border-radius:1.6rem;overflow:hidden;aspect-ratio:4/3;min-height:0;max-height:100%;box-shadow:0 .3rem 1rem rgba(60,30,160,.18)}
+.cards .tap img{width:100%;height:100%;object-fit:cover;display:block}
+.cards .tap span{position:absolute;left:0;right:0;bottom:0;padding:.5rem .6rem .7rem;background:rgba(103,67,255,.92);color:#fff;font-family:var(--display);font-weight:500;font-size:2.2rem;text-align:center;opacity:0;translate:0 100%;transition:.25s}
+.cards .tap.seen span{opacity:1;translate:0}
+.cards .tap:hover{filter:brightness(1.05)}
+.cards .tap::after{content:"🔊";position:absolute;top:.5rem;right:.7rem;font-size:1.8rem;filter:drop-shadow(0 .1rem .2rem rgba(0,0,0,.5))}
+.cards{grid-auto-flow:row}
+
+/* 2 in / on */
+.inon .pic{width:44rem;height:29.4rem;max-height:100%}
+.inon .say{min-height:10rem}
+.inon .choices{display:flex;gap:1.6rem}
+.inon .choice{min-width:11rem}
+.inon .col{align-items:flex-start}
+
+/* 3 + 4 chant */
+.lines{display:flex;flex-direction:column;gap:.5rem}
+.line{border:0;background:none;text-align:left;font-family:var(--display);font-weight:400;font-size:2.3rem;line-height:1.25;color:var(--ink);padding:.4rem 1.2rem;border-radius:1.2rem;display:block;transition:background .2s}
+.line.now{background:var(--soft);box-shadow:inset .4rem 0 0 var(--purple)}
+.line:hover{background:#f7f5ff}
+.line .n{color:var(--purple)}
+.chant .col.r{align-items:center}
+.chant .pic{width:23rem;height:17.25rem}
+.head .pill-b{flex:none;margin-left:1rem}
+.head{flex-wrap:wrap}
+
+/* 4 write the chant */
+.fill4 .line{font-size:2rem;padding:.25rem 1.2rem;cursor:default}
+.fill4 .gap{min-width:6.4rem;font-size:2rem;margin:0 .15rem}
+.bank{display:flex;gap:1rem;flex-wrap:wrap}
+.fill4 .pic{height:23rem;width:auto;aspect-ratio:7/9}
+
+/* 5 read */
+.rbox{display:flex;flex-direction:column;gap:1.8rem;width:100%}
+.rrow{display:flex;align-items:center;gap:2.2rem;border:0;background:none;text-align:left;font-family:var(--display);font-weight:400;font-size:3.1rem;line-height:1.2;padding:.5rem 1rem;border-radius:1.4rem;color:var(--ink)}
+.rrow img{width:15rem;height:10rem;border-radius:1.2rem;object-fit:cover;flex:none}
+.rrow.now{background:var(--soft);box-shadow:inset .4rem 0 0 var(--purple)}
+.rrow:hover{background:#f7f5ff}
+
+/* 6 SB write */
+.w6{display:grid;grid-template-columns:1fr 1fr;gap:1.6rem 3rem;width:100%;align-content:center;height:100%}
+.w6 .it{display:flex;gap:1.4rem;align-items:flex-start;min-width:0}
+.w6 .pic{width:13rem;height:8.7rem;flex:none}
+.w6 .num{font-family:var(--display);font-weight:600;color:var(--orange);font-size:2.6rem;line-height:1.2}
+.w6 .sen{font-family:var(--display);font-size:2.1rem;line-height:1.5;color:var(--ink)}
+.w6 .sen.done{cursor:pointer}
+.w6 .opts{display:flex;gap:.4rem;margin-top:.5rem;flex-wrap:wrap}
+.w6 .choice.sm{font-size:1.4rem;border-width:.75rem;border-image-width:.75rem}
+
+/* 7 order the words */
+.order .pic{width:36rem;height:22rem}
+.order .col{flex:1;max-width:46rem;align-items:flex-start}
+.build{min-height:7.6rem;width:100%;border-bottom:.3rem solid var(--ink);display:flex;flex-wrap:wrap;gap:.6rem;align-items:flex-end;padding:0 0 .5rem;font-family:var(--display);font-size:2.6rem}
+.build.ok{border-color:var(--green)}
+.build.bad{animation:shake .45s}
+.word{border:.8rem solid transparent;border-image:url(ui-kit/field.png) 70 fill/.8rem;background:#bfd3df padding-box;color:#17304f;font-family:var(--display);font-weight:600;font-size:2.4rem;line-height:1.1;padding:0 .3rem;cursor:pointer}
+.word.used{opacity:.25;pointer-events:none}
+.build.ok .word{border-image-source:url(ui-kit/btn-green.png);background:var(--green);color:#fff}
+.bankrow{display:flex;gap:.8rem;flex-wrap:wrap}
+.dot{font-size:3rem;font-family:var(--display);font-weight:600;align-self:flex-end;display:none}
+.build.ok .dot{display:inline}
+.row{display:flex;gap:1.4rem;align-items:center}
+
+/* 8 ask and answer */
+.ask .thumbs{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;width:30rem;flex:none}
+.ask .thumbs button{border:.3rem solid transparent;border-radius:1.2rem;padding:0;background:none;overflow:hidden;aspect-ratio:3/2;opacity:.75}
+.ask .thumbs button.on{border-color:var(--purple);opacity:1}
+.ask .thumbs img{width:100%;height:100%;object-fit:cover;display:block}
+.ask .big-pic{width:30rem;height:18rem}
+.bub{position:relative;text-align:left;font-family:var(--display);font-size:2.8rem;line-height:1.25;padding:1.1rem 1.6rem;border-radius:2rem;color:var(--ink);max-width:40rem;display:block}
+.bub.q{background:#cfe9ff;margin-right:auto}
+.bub.a{background:#ffe8a0;margin-left:auto}
+.bub.q::after,.bub.a::after{content:"";position:absolute;bottom:-.9rem;width:1.8rem;height:1.8rem;background:inherit;rotate:45deg;border-radius:.3rem}
+.bub.q::after{left:2rem}.bub.a::after{right:2rem}
+.ask .col.talk{gap:2rem;width:38rem}
+
+/* closing slide: the picture is the whole page */
+.page.full .hero{z-index:1}
+.page.full .frame{inset:0;background:none;border-radius:0}
+.page.full .notch,.page.full .head,.page.full .pill{display:none}
+.page.full .content{padding:0}
+.seeyou{display:block;width:100%;height:100%;object-fit:contain}
+.page.full .nav{left:auto;right:1.6rem;transform:none;bottom:1.6rem}
+
+/* settings overlay */
+#help{position:fixed;inset:0;z-index:20;background:rgba(40,20,120,.6);display:grid;place-items:center}
+#help .box{background:#fff;border-radius:2rem;padding:2rem 2.6rem;width:min(52rem,92vw);font-family:var(--title);font-size:1.7rem;max-height:90vh;overflow:auto}
+#help h2{margin:0 0 1rem;font-family:var(--display);color:var(--orange);font-size:2.4rem}
+#help table{border-collapse:collapse;width:100%}
+#help td{padding:.3rem .6rem;border-bottom:1px solid var(--line)}
+#help td:first-child{font-weight:700;color:var(--purple);white-space:nowrap}
+#help label{display:flex;gap:1rem;align-items:center;margin:1rem 0}
+#help .go{margin-top:1rem}
+
+@media (max-aspect-ratio:1/1){
+  .stage,.chant .stage{flex-direction:column;gap:1.6rem;justify-content:flex-start;overflow:auto}
+  .cards{grid-template-columns:repeat(2,1fr)}
+  .inon .pic,.order .pic,.ask .big-pic{width:100%;height:auto;aspect-ratio:3/2;max-width:44rem}
+  .w6{grid-template-columns:1fr;overflow:auto}
+  .ask .thumbs,.ask .col.talk{width:100%}
+  .chant .pic{width:22rem;height:16rem}
+  .line{font-size:2.2rem}.fill4 .line{font-size:1.9rem}
+  .rrow{font-size:2.3rem;flex-wrap:wrap}.rrow img{width:11rem;height:7rem}
+}
+</style>
+</head>
+<body>
+<div class="page">
+  <div class="frame">
+    <div class="notch"><img class="logo" src="LOGO.png" alt="Starley English"></div>
+    <header class="head">
+      <div class="badge" id="num">1</div>
+      <h1 class="instr" id="instr"></h1>
+    </header>
+    <main class="content" id="body"></main>
+    <div class="nav">
+      <button type="button" data-go="prev" aria-label="Previous slide"></button>
+      <button type="button" data-go="next" aria-label="Next slide"></button>
+    </div>
+  </div>
+  <a class="pill" href="https://starleyenglish.com" target="_blank" rel="noopener">starleyenglish.com</a>
+</div>
+<div id="help" class="hide" role="dialog" aria-label="Keys and settings">
+  <div class="box">
+    <h2>Keys</h2>
+    <table>
+      <tr><td>Space, Return, →</td><td>Next (or next picture)</td></tr>
+      <tr><td>←</td><td>Previous slide</td></tr>
+      <tr><td>R</td><td>Play the slide's audio again</td></tr>
+      <tr><td>?</td><td>This list</td></tr>
+    </table>
+    <label>Volume <input type="range" id="vol" min="0" max="1" step="0.05" value="1"></label>
+    <button class="go" id="helpDone" type="button">Done</button>
+  </div>
+</div>
+
+<script>
+/* Unit 7 "My Town", Lesson 2: There's a… (in / on)
+   Book pages: Student Book p71 (Ex 1 chant TR 103, Ex 2 TR 104, Ex 3 write), Workbook p57 (Ex 1 TR 38, Ex 2 write).
+   Added slides: the places recap (SB p70 photos), "in or on?", and ask and answer. */
+
+const IMG = 'images/', AUD = 'audio/';
+const $ = (s, r = document) => r.querySelector(s);
+function h(tag, cls, html) { const e = document.createElement(tag); if (cls) e.className = cls; if (html != null) e.innerHTML = html; return e; }
+const store = { get(k, d) { try { const v = localStorage.getItem(k); return v == null ? d : JSON.parse(v); } catch (e) { return d; } },
+                set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} } };
+
+/* ---------- sound: recorded clips and tiny effects ---------- */
+let volume = store.get('u7l2.vol', 1);
+let cur = null, curEnd = null;
+function stopAudio() { if (cur) { cur.pause(); cur.onended = null; cur.ontimeupdate = null; cur = null; } if (curEnd) { curEnd(); curEnd = null; } }
+function play(file, opts = {}) {
+  stopAudio();
+  const a = new Audio(AUD + file + '.mp3'); a.volume = volume; cur = a;
+  curEnd = opts.onend || null;
+  if (opts.onupdate) a.ontimeupdate = () => opts.onupdate(a.currentTime);
+  a.onended = () => { if (cur === a) { cur = null; const f = curEnd; curEnd = null; if (f) f(); } };
+  a.play().catch(() => { if (cur === a) { cur = null; const f = curEnd; curEnd = null; if (f) f(); } });
+  return a;
+}
+let ac = null;
+function tone(freqs, dur = .12) {
+  try {
+    ac = ac || new (window.AudioContext || window.webkitAudioContext)();
+    freqs.forEach((f, i) => {
+      const o = ac.createOscillator(), g = ac.createGain(), t = ac.currentTime + i * dur;
+      o.type = 'sine'; o.frequency.value = f; g.gain.setValueAtTime(.001, t);
+      g.gain.exponentialRampToValueAtTime(.18 * volume + .001, t + .02); g.gain.exponentialRampToValueAtTime(.001, t + dur * 1.6);
+      o.connect(g).connect(ac.destination); o.start(t); o.stop(t + dur * 1.7);
+    });
+  } catch (e) {}
+}
+const chime = () => tone([660, 880, 1100]), buzz = () => tone([220, 180], .14);
+
+/* ---------- small helpers ---------- */
+const cap = s => s.charAt(0).toUpperCase() + s.slice(1);
+const glow = (html) => html.replace(/\b(in|on)\b/g, '<span class="prep">$1</span>');
+function tally(n) { const t = h('div', 'tally'); for (let i = 0; i < n; i++) t.append(h('i')); return t; }
+function trackBtn(label, file, hooks) {
+  const b = h('button', 'pill-b'); b.type = 'button';
+  let a = null;
+  const set = playing => { b.classList.toggle('pause', playing); b.classList.toggle('play', !playing); b.innerHTML = (playing ? '⏸ ' : '▶ ') + label; b.setAttribute('aria-label', (playing ? 'Pause ' : 'Play ') + label); };
+  b.onclick = () => {
+    if (a && cur === a) { if (a.paused) { a.play(); set(true); } else { a.pause(); set(false); } return; }
+    a = play(file, { onupdate: hooks.update, onend: () => { set(false); hooks.end(); } }); set(true);
+  };
+  set(false);
+  return { el: b, replay: () => { stopAudio(); b.onclick(); } };
+}
+
+/* ---------- slides ---------- */
+const PLACES = [['library', 'library'], ['park', 'park'], ['playground', 'playground'], ['store', 'store'], ['street', 'street'], ['pool', 'swimming pool'], ['city_center_a', 'town center'], ['zoo', 'zoo']];
+
+const SLIDES = [
+  /* cover: full-screen photo, text laid out like the Look! lesson covers */
+  { n: null, full: true, t: '', build(c) {
+      c.append(h('div', 'hero', `<img class="bg" src="${IMG}cover.jpg" alt=""><div class="tint"></div>
+        <div class="sheet">
+          <img class="hl-logo" src="LOGO.png" alt="Starley English">
+          <div class="lk">Look!</div><div class="bd">1</div>
+          <div class="sub">Unit 7: My Town</div>
+          <button class="go start" type="button">Start lesson ›</button>
+          <img class="ng" src="${IMG}natgeo.png" alt="National Geographic Learning">
+          <a class="web" href="https://starleyenglish.com" target="_blank" rel="noopener">starleyenglish.com</a>
+        </div>`));
+      c.querySelector('.start').onclick = () => go(at + 1);
+  } },
+
+  /* recap of lesson 1 places */
+  { n: 1, t: 'Look and say. Tap a picture.', build(c) {
+      const g = h('div', 'cards');
+      PLACES.forEach(([f, w]) => {
+        const b = h('button', 'tap', `<img src="${IMG}p-${f}.jpg" alt="${w}"><span>${w}</span>`); b.type = 'button';
+        b.onclick = () => { b.classList.add('seen'); tone([700], .1); };
+        g.append(b);
+      });
+      c.append(g);
+  } },
+
+  /* in or on */
+  { n: 2, t: 'Look and tap: in or on?', build(c) {
+      const items = [
+        ['ex3-1', "There's a swimming pool", 'in', 'the park.'],
+        ['ex3-2', "There's a store", 'on', 'the street.'],
+        ['ex3-3', "There's a girl", 'in', 'the store.'],
+        ['ex3-4', "There's a boy", 'on', 'the playground.'],
+        ['wb-4', "There's a library", 'on', 'the street.'],
+        ['wb-1', "There's a playground", 'in', 'the park.']
+      ];
+      let i = 0, done = false;
+      const st = h('div', 'stage inon'); const pic = h('img', 'pic'); const col = h('div', 'col');
+      const dots = tally(items.length), say1 = h('div', 'big say'), ch = h('div', 'choices'), nx = h('button', 'go hide', 'Next picture ›');
+      nx.type = 'button';
+      const bi = h('button', 'choice', 'in'), bo = h('button', 'choice', 'on'); bi.type = bo.type = 'button';
+      ch.append(bi, bo); col.append(dots, say1, ch, nx); st.append(pic, col); c.append(st);
+      function show() {
+        const [img, a, p, z] = items[i]; done = false;
+        pic.src = IMG + img + '.jpg'; pic.alt = '';
+        say1.innerHTML = `${a} <span class="gap"></span> ${z}`;
+        [bi, bo].forEach(b => b.className = 'choice'); ch.classList.remove('hide'); nx.classList.add('hide');
+      }
+      function pick(b, w) {
+        const [, a, p, z] = items[i];
+        if (w !== p) { b.classList.add('nope'); buzz(); return; }
+        b.classList.add('right'); chime(); done = true;
+        say1.innerHTML = `${a} <span class="gap fill">${p}</span> ${z}`;
+        dots.children[i].classList.add('on');
+        if (i < items.length - 1) nx.classList.remove('hide');
+      }
+      bi.onclick = () => pick(bi, 'in'); bo.onclick = () => pick(bo, 'on');
+      nx.onclick = () => { i++; show(); };
+      show();
+      return { next() { if (done && i < items.length - 1) { i++; show(); return true; } return false; },
+               };
+  } },
+
+  /* SB Ex 1: chant, Track 103 */
+  { n: 3, t: 'Listen and chant.', build(c) {
+      const L = [
+        ['street', 'in', 'town', 'street.jpg', 0.5], ['store', 'on', 'street', 'ex3-2.jpg', 6.7], ['girl', 'in', 'store', 'ex3-3.jpg', 13.0],
+        ['store', 'on', 'street', 'ex3-2.jpg', 19.3], ['street', 'in', 'town', 'street.jpg', 25.6]
+      ];
+      const clip = ['chant-1', 'chant-2', 'chant-3', 'chant-2', 'chant-1'];
+      const st = h('div', 'stage chant'); const left = h('div', 'col'), right = h('div', 'col r');
+      const lines = h('div', 'lines'); const btns = [];
+      L.forEach(([a, p, z], k) => {
+        const b = h('button', 'line', `There's <span class="n">a ${a}, a ${a}, a ${a}</span> <span class="prep">${p}</span> the <span class="n">${z}</span>.`); b.type = 'button';
+        b.onclick = () => { setNow(k); play(clip[k], { onend: () => setNow(-1) }); };
+        btns.push(b); lines.append(b);
+      });
+      const pic = h('img', 'pic'); pic.src = IMG + L[0][3]; pic.alt = '';
+      function setNow(k) { btns.forEach((b, j) => b.classList.toggle('now', j === k)); if (k >= 0) pic.src = IMG + L[k][3]; }
+      const tb = trackBtn('Track 103', 'chant', {
+        start() {}, end() { setNow(-1); },
+        update(t) { let k = -1; L.forEach((l, j) => { if (t >= l[4] - .2) k = j; }); setNow(k); }
+      });
+      left.append(lines); right.append(pic); st.append(left, right); c.append(st);
+      return { track: tb.el, replay: tb.replay };
+  } },
+
+  /* WB Ex 1: listen, read, write. Track 38 */
+  { n: 4, t: 'Listen, read, and write.', build(c) {
+      /* the gaps to fill, in reading order */
+      const L = [
+        { w: ["There's a", ['street', 0], ', a street, a street in the town.'] },
+        { w: ["There's a store, a store, a store", ['on', 0], 'the street.'] },
+        { w: [["There's", 0], 'a girl, a', ['girl', 0], ', a girl', ['in', 0], 'the store.'] },
+        { w: ["There's a", ['store', 0], ', a store, a store on the', ['street', 0], '.'] },
+        { w: ["There's a street, a street, a street", ['in', 0], 'the', ['town', 0], '.'] }
+      ];
+      const starts = [0.5, 6.9, 13.2, 19.6, 25.9];
+      const st = h('div', 'stage fill4'); const left = h('div', 'col'); const right = h('div', 'col');
+      const lines = h('div', 'lines'); const gaps = [];
+      L.forEach((ln, k) => {
+        const d = h('div', 'line'); let html = '';
+        ln.w.forEach((p, j) => {
+          if (typeof p === 'string') { html += (j && !/^[.,]/.test(p) ? ' ' : '') + p; return; }
+          const idx = gaps.length; gaps.push({ word: p[0], el: null, done: !!p[1] });
+          html += (j ? ' ' : '') + (p[1] ? `<span class="gap fill" data-i="${idx}">${p[0]}</span>` : `<span class="gap" data-i="${idx}"></span>`);
+        });
+        d.innerHTML = html; lines.append(d);
+      });
+      lines.querySelectorAll('.gap').forEach(g => { gaps[+g.dataset.i].el = g; });
+      const bank = h('div', 'bank');
+      ["There's", 'girl', 'store', 'street', 'in', 'on', 'town'].forEach(w => {
+        const b = h('button', 'choice sm', w); b.type = 'button';
+        b.onclick = () => {
+          const t = gaps.find(g => !g.done); if (!t) return;
+          if (t.word === w) { t.done = true; t.el.textContent = w; t.el.className = 'gap fill'; chime(); mark(); }
+          else { b.classList.remove('nope'); void b.offsetWidth; b.classList.add('nope'); buzz(); setTimeout(() => b.classList.remove('nope'), 600); }
+        };
+        bank.append(b);
+      });
+      function mark() { const t = gaps.find(g => !g.done); gaps.forEach(g => g.el.classList.toggle('target', g === t)); }
+      mark();
+      const btns = lines.children;
+      const tb = trackBtn('Track 38', 'wb-chant', {
+        start() {}, end() { [...btns].forEach(b => b.classList.remove('now')); },
+        update(t) { let k = -1; starts.forEach((s, j) => { if (t >= s - .2) k = j; }); [...btns].forEach((b, j) => b.classList.toggle('now', j === k)); }
+      });
+      left.append(lines, bank);
+      right.append(Object.assign(h('img', 'pic'), { src: IMG + 'books.jpg', alt: '' }));
+      st.append(left, right); c.append(st);
+      return { track: tb.el, replay: tb.replay };
+  } },
+
+  /* SB Ex 2: listen and read. Track 104 */
+  { n: 5, t: 'Listen and read.', build(c) {
+      const R = [["There's a store on the street.", 'ex3-2', 'read-1'], ["There's a library in the town center.", 'wb-4', 'read-2']];
+      const st = h('div', 'stage'); const col = h('div', 'col'); col.style.width = '100%';
+      const box = h('div', 'rbox'); const rows = [];
+      R.forEach(([s, img, clip], k) => {
+        const html = glow(s.replace("There's a", '<span class="hl">There\'s a</span>'));
+        const b = h('button', 'rrow', `<img src="${IMG}${img}.jpg" alt=""><span>${html}</span>`); b.type = 'button';
+        b.onclick = () => { setNow(k); play(clip, { onend: () => setNow(-1) }); };
+        rows.push(b); box.append(b);
+      });
+      function setNow(k) { rows.forEach((b, j) => b.classList.toggle('now', j === k)); }
+      const tb = trackBtn('Track 104', 'read', {
+        start() {}, end() { setNow(-1); },
+        update(t) { setNow(t >= 3.1 ? 1 : 0); }
+      });
+      col.append(box); st.append(col); c.append(st);
+      return { track: tb.el, replay: tb.replay };
+  } },
+
+  /* SB Ex 3: write */
+  { n: 6, t: 'Write.', build(c) {
+      const W = [
+        ['ex3-1', ['There', "There's", "They're"], 'There', "'s a swimming pool in the park."],
+        ['ex3-2', ['There', "There's", "They're"], 'There', "'s a store on the street."],
+        ['ex3-3', ['There', "There's", "They're"], "There's", " a girl in the store.", "There's"],
+        ['ex3-4', ['There', "There's", "They're"], "There's", " a boy on the playground.", "There's"]
+      ];
+      const g = h('div', 'w6');
+      W.forEach(([img, opts, ans, rest], k) => {
+        const it = h('div', 'it');
+        const pic = Object.assign(h('img', 'pic'), { src: IMG + img + '.jpg', alt: '' });
+        const sen = h('div', 'sen'); const tx = h('div', 'col'); tx.style.gap = '.2rem';
+        sen.innerHTML = `<span class="num">${k + 1}.</span> <span class="gap target" style="min-width:8rem"></span>${rest}`;
+        const ob = h('div', 'opts');
+        opts.forEach(o => {
+          const b = h('button', 'choice sm', o); b.type = 'button';
+          b.onclick = () => {
+            if (o === ans) {
+              chime(); const gp = sen.querySelector('.gap'); gp.textContent = o; gp.className = 'gap fill'; gp.style.minWidth = '';
+              ob.remove(); sen.classList.add('done'); 
+            } else { b.classList.add('nope'); buzz(); }
+          };
+          ob.append(b);
+        });
+        tx.append(sen, ob); it.append(pic, tx); g.append(it);
+      });
+      c.append(g);
+  } },
+
+  /* WB Ex 2: put the words in order */
+  { n: 7, t: 'Write. Put the words in order.', build(c) {
+      const Q = [
+        ['wb-1', ['the park', 'in', 'a playground', "there's"], ["there's", 'a playground', 'in', 'the park']],
+        ['wb-2', ["there's", 'the store', 'in', 'a man'], ["there's", 'a man', 'in', 'the store']],
+        ['wb-3', ['the car', 'a woman', 'in', "there's"], ["there's", 'a woman', 'in', 'the car']],
+        ['wb-4', ['a library', 'on', "there's", 'the street'], ["there's", 'a library', 'on', 'the street']]
+      ];
+      let i = 0, done = false;
+      const st = h('div', 'stage order'); const pic = h('img', 'pic'); const col = h('div', 'col');
+      const dots = tally(Q.length), top = h('div', 'row'), build = h('div', 'build'), bank = h('div', 'bankrow');
+      const reset = h('button', 'pill-b', '↺ Clear'); reset.type = 'button';
+      const nx = h('button', 'go hide', 'Next ›'); nx.type = 'button';
+      top.append(dots);
+      col.append(top, build, bank, reset, nx); st.append(pic, col); c.append(st);
+      let placed = [];
+      function render() {
+        build.innerHTML = '';
+        placed.forEach((w, k) => {
+          const b = h('button', 'word', k === 0 ? cap(w) : w); b.type = 'button';
+          b.onclick = () => { if (done) return; placed.splice(k, 1); render(); };
+          build.append(b);
+        });
+        build.append(h('span', 'dot', '.'));
+        [...bank.children].forEach(b => b.classList.toggle('used', placed.includes(b.dataset.w)));
+      }
+      function check() {
+        const [, , ans] = Q[i];
+        if (placed.length !== ans.length) return;
+        if (placed.join('|') === ans.join('|')) {
+          done = true; build.classList.add('ok'); chime(); dots.children[i].classList.add('on');
+          if (i < Q.length - 1) nx.classList.remove('hide');
+        } else { buzz(); build.classList.remove('bad'); void build.offsetWidth; build.classList.add('bad'); }
+      }
+      function show() {
+        const [img, words, ans] = Q[i]; done = false; placed = [];
+        pic.src = IMG + img + '.jpg'; pic.alt = ''; build.className = 'build'; nx.classList.add('hide');
+        bank.innerHTML = '';
+        words.forEach(w => {
+          const b = h('button', 'word', w); b.type = 'button'; b.dataset.w = w;
+          b.onclick = () => { if (done || placed.includes(w)) return; placed.push(w); render(); check(); };
+          bank.append(b);
+        });
+        render();
+      }
+      reset.onclick = () => { if (!done) { placed = []; build.classList.remove('bad'); render(); } };
+      nx.onclick = () => { i++; show(); };
+      show();
+      return { next() { if (done && i < Q.length - 1) { i++; show(); return true; } return false; }};
+  } },
+
+  /* ask and answer */
+  { n: 8, t: 'Ask and answer.', build(c) {
+      const A = [
+        ['ex3-1', 'swimming pool', "There's a swimming pool in the park."], ['ex3-2', 'store', "There's a store on the street."],
+        ['ex3-3', 'girl', "There's a girl in the store."], ['wb-4', 'library', "There's a library on the street."],
+        ['wb-3', 'woman', "There's a woman in the car."], ['wb-2', 'man', "There's a man in the store."]
+      ];
+      const st = h('div', 'stage ask'); const left = h('div', 'col'); const big = h('img', 'pic big-pic');
+      const th = h('div', 'thumbs'); const talk = h('div', 'col talk');
+      const q = h('div', 'bub q'), a = h('div', 'bub a');
+      let k = 0; const tb = [];
+      A.forEach(([img], j) => {
+        const b = h('button', '', `<img src="${IMG}${img}.jpg" alt="">`); b.type = 'button';
+        b.onclick = () => { k = j; show(); }; tb.push(b); th.append(b);
+      });
+      function show() {
+        const [img, w, s] = A[k]; big.src = IMG + img + '.jpg'; big.alt = '';
+        q.innerHTML = `Where's the ${w}?`; a.innerHTML = glow(s);
+        tb.forEach((b, j) => b.classList.toggle('on', j === k));
+      }
+      left.append(big, th); talk.append(q, a); st.append(left, talk); c.append(st); show();
+  } },
+
+  /* closing: the finished See you! picture fills the window */
+  { n: null, full: true, t: '', build(c) {
+      c.append(Object.assign(h('img', 'seeyou'), { src: IMG + 'see-you.jpg', alt: 'See you!' }));
+  } }
+];
+
+/* ---------- deck ---------- */
+let at = 0, api = null;
+function go(i) {
+  stopAudio();
+  at = Math.max(0, Math.min(SLIDES.length - 1, i));
+  const s = SLIDES[at], body = $('#body');
+  body.innerHTML = '';
+  $('.page').classList.toggle('full', !!s.full);
+  $('#num').style.visibility = s.n == null ? 'hidden' : 'visible'; $('#num').textContent = s.n;
+  $('#instr').textContent = s.t;
+  document.querySelectorAll('.head .pill-b').forEach(e => e.remove());
+  api = s.build(body) || null;
+  if (api && api.track) $('.head').append(api.track);
+  $('[data-go=prev]').disabled = at === 0;
+  $('[data-go=next]').disabled = at === SLIDES.length - 1;
+}
+$('.nav').addEventListener('click', e => { const b = e.target.closest('[data-go]'); if (b) { b.blur(); go(at + (b.dataset.go === 'next' ? 1 : -1)); } });
+
+const help = $('#help');
+function toggleHelp(on) { help.classList.toggle('hide', on === undefined ? !help.classList.contains('hide') ? true : false : !on); }
+$('#helpDone').onclick = () => help.classList.add('hide');
+help.onclick = e => { if (e.target === help) help.classList.add('hide'); };
+$('#vol').value = volume;
+$('#vol').oninput = e => { volume = +e.target.value; store.set('u7l2.vol', volume); if (cur) cur.volume = volume; };
+
+document.addEventListener('keydown', e => {
+  if (e.metaKey || e.ctrlKey || e.altKey) return;
+  if (!help.classList.contains('hide')) { if (e.key === 'Escape' || e.key === 'Enter') { e.preventDefault(); help.classList.add('hide'); } return; }
+  const k = e.key;
+  if (k === 'ArrowRight' || k === ' ' || k === 'Enter') { e.preventDefault(); if (document.activeElement && document.activeElement.blur) document.activeElement.blur(); if (!(api && api.next && api.next())) go(at + 1); }
+  else if (k === 'ArrowLeft') { e.preventDefault(); go(at - 1); }
+  else if (k === 'r' || k === 'R') { if (api && api.replay) api.replay(); }
+  else if (k === '?' || k === '/') { help.classList.remove('hide'); }
+});
+go(+new URLSearchParams(location.search).get('s') || 0);
+</script>
+</body>
+</html>
